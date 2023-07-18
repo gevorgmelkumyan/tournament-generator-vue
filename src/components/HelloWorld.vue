@@ -1,8 +1,10 @@
 <template>
   <v-container class="fill-height">
     <v-responsive class="align-center text-center fill-height">
-      <h1>Welcome to Tournament Generator!</h1>
-      <v-btn theme="dark" class="mt-3" @click="startTournament" :loading="loading">Create a Tournament</v-btn>
+      <template v-if="!divisionA">
+        <h1>Welcome to Tournament Generator!</h1>
+        <v-btn theme="dark" class="mt-3" @click="startTournament" :loading="loading">Create a Tournament</v-btn>
+      </template>
 
       <div v-if="divisionA && divisionB">
         <v-container>
