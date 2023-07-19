@@ -6,232 +6,109 @@
         <v-btn theme="dark" class="mt-3" @click="startTournament" :loading="loading">Create a Tournament</v-btn>
       </template>
 
-      <div v-if="divisionA && divisionB && !divisionGames">
-        <v-container>
-          <v-row>
-            <v-col>
-              <h1>Division A</h1>
-              <v-list>
-                <v-list-item
-                  v-for="team in divisionA"
-                  :key="team.name"
-                  :title="team.name"
-                ></v-list-item>
-              </v-list>
-            </v-col>
+      <v-expand-transition>
+        <div v-if="divisionA && divisionB">
+          <v-container>
+            <v-row>
+              <v-col>
+                <h1 class="mt-10">Division A</h1>
+                <team-list :division="divisionA" />
+              </v-col>
 
-            <v-col>
-              <h1>Division B</h1>
-              <v-list>
-                <v-list-item
-                  v-for="team in divisionB"
-                  :key="team.name"
-                  :title="team.name"
-                ></v-list-item>
-              </v-list>
-            </v-col>
-          </v-row>
-        </v-container>
+              <v-col>
+                <h1 class="mt-10">Division B</h1>
+                <team-list :division="divisionB" />
+              </v-col>
+            </v-row>
+          </v-container>
 
-        <v-btn theme="dark" class="mt-3" @click="runDivisionGames" :loading="loading">Run Division Games</v-btn>
-      </div>
+          <v-btn v-if="divisionA && divisionB && !divisionGames" theme="dark" class="mt-3" @click="runDivisionGames" :loading="loading">Run Division Games</v-btn>
+        </div>
+      </v-expand-transition>
 
-      <template v-if="divisionGames && !playoffGames">
-        <h1>Division A</h1>
-        <v-table theme="dark" density="compact">
-          <thead>
-          <tr>
-            <th class="text-left">
-              Teams
-            </th>
-            <th v-for="column in divisionGames.divisionA.columns" class="text-left">
-              {{ column.name }} ({{ column.id }})
-            </th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr
-            v-for="row in divisionGames.divisionA.rows"
-            :key="row.game_id"
-          >
-            <td>{{ row[0].team_id }}</td>
-            <td v-for="item in row">{{ item.score }}</td>
-          </tr>
-          </tbody>
-        </v-table>
+      <v-expand-transition>
+        <div v-if="divisionGames">
+          <h1 class="mt-10">Division A</h1>
+          <division-game :rows="divisionGames.divisionA.rows" :columns="divisionGames.divisionA.columns" />
 
-        <h1 class="mt-10">Division B</h1>
-        <v-table theme="dark" density="compact">
-          <thead>
-          <tr>
-            <th class="text-left">
-              Teams
-            </th>
-            <th v-for="column in divisionGames.divisionB.columns" class="text-left">
-              {{ column.name }} ({{ column.id }})
-            </th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr
-            v-for="row in divisionGames.divisionB.rows"
-            :key="row.game_id"
-          >
-            <td>{{ row[0].team_id }}</td>
-            <td v-for="item in row">{{ item.score }}</td>
-          </tr>
-          </tbody>
-        </v-table>
+          <h1 class="mt-10">Division B</h1>
+          <division-game :rows="divisionGames.divisionB.rows" :columns="divisionGames.divisionB.columns" />
 
-        <v-container>
-          <v-row>
-            <v-col>
-              <h1>Division A Winners</h1>
-              <v-table theme="dark" density="compact">
-                <thead>
-                <tr>
-                  <th class="text-center">
-                    Team
-                  </th>
-                  <th class="text-center">
-                    Total Score
-                  </th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr
-                  v-for="row in divisionGames.divisionA.winners"
-                  :key="row.team_id"
-                >
-                  <td>{{ row.team_id }}</td>
-                  <td>{{ row.total }}</td>
-                </tr>
-                </tbody>
-              </v-table>
-            </v-col>
+          <v-container>
+            <v-row>
+              <v-col>
+                <h1 class="mt-10">Division A Winners</h1>
+                <division-game-winners :winners="divisionGames.divisionA.winners" />
+              </v-col>
 
-            <v-col>
-              <h1>Division B Winners</h1>
-              <v-table theme="dark" density="compact">
-                <thead>
-                <tr>
-                  <th class="text-center">
-                    Team
-                  </th>
-                  <th class="text-center">
-                    Total Score
-                  </th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr
-                  v-for="row in divisionGames.divisionB.winners"
-                  :key="row.team_id"
-                >
-                  <td>{{ row.team_id }}</td>
-                  <td>{{ row.total }}</td>
-                </tr>
-                </tbody>
-              </v-table>
-            </v-col>
-          </v-row>
-        </v-container>
+              <v-col>
+                <h1 class="mt-10">Division B Winners</h1>
+                <division-game-winners :winners="divisionGames.divisionB.winners" />
+              </v-col>
+            </v-row>
+          </v-container>
 
-        <v-btn theme="dark" class="mt-3" @click="runPlayoffGames" :loading="loading">Run Playoffs</v-btn>
-      </template>
+          <v-btn v-if="divisionGames && !playoffGames" theme="dark" class="mt-3" @click="runPlayoffGames" :loading="loading">Run Playoffs</v-btn>
+        </div>
+      </v-expand-transition>
 
-      <template v-if="playoffGames && !semifinalGames">
-        <h1 class="mt-10">Playoffs</h1>
-        <v-table theme="dark" density="compact">
-          <thead>
-          <tr>
-            <th class="text-center">
-              Game
-            </th>
-            <th class="text-center">
-              Score
-            </th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr
-            v-for="row in playoffGames"
-          >
-            <td>{{ row[0].team_id }} : {{ row[1].team_id }}</td>
-            <td>{{ row[0].score }} : {{ row[1].score }}</td>
-          </tr>
-          </tbody>
-        </v-table>
+      <v-expand-transition>
+        <div v-if="playoffGames">
+          <h1 class="mt-10">Playoffs</h1>
+          <game :data="playoffGames" />
 
-        <v-btn theme="dark" class="mt-3" @click="runSemifinalGames" :loading="loading">Run Semi-Finals</v-btn>
-      </template>
+          <v-btn v-if="playoffGames && !semifinalGames" theme="dark" class="mt-3" @click="runSemifinalGames" :loading="loading">Run Semi-Finals</v-btn>
+        </div>
+      </v-expand-transition>
 
-      <template v-if="semifinalGames && !finalGames">
-        <h1 class="mt-10">Semi-Finals</h1>
-        <v-table theme="dark" density="compact">
-          <thead>
-          <tr>
-            <th class="text-center">
-              Game
-            </th>
-            <th class="text-center">
-              Score
-            </th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr
-            v-for="row in semifinalGames"
-          >
-            <td>{{ row[0].team_id }} : {{ row[1].team_id }}</td>
-            <td>{{ row[0].score }} : {{ row[1].score }}</td>
-          </tr>
-          </tbody>
-        </v-table>
+      <v-expand-transition>
+        <div v-if="semifinalGames">
+          <h1 class="mt-10">Semi-Finals</h1>
+          <game :data="semifinalGames" />
 
-        <v-btn theme="dark" class="mt-3" @click="runFinalGames" :loading="loading">Run Finals</v-btn>
-      </template>
+          <v-btn v-if="semifinalGames && !finalGames" theme="dark" class="mt-3" @click="runFinalGames" :loading="loading">Run Finals</v-btn>
+        </div>
+      </v-expand-transition>
 
-      <template v-if="finalGames">
-        <h1 class="mt-10">Finals</h1>
-        <v-table theme="dark" density="compact">
-          <thead>
-          <tr>
-            <th class="text-center">
-              Game
-            </th>
-            <th class="text-center">
-              Score
-            </th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr
-            v-for="row in finalGames.finals"
-          >
-            <td>{{ row[0].team_id }} : {{ row[1].team_id }}</td>
-            <td>{{ row[0].score }} : {{ row[1].score }}</td>
-          </tr>
-          </tbody>
-        </v-table>
+      <v-expand-transition>
+        <div v-if="finalGames">
+          <h1 class="mt-10">Finals</h1>
+          <game :data="finalGames.finals" />
 
-        <h1>Results</h1>
-        <v-list>
-          <v-list-item
-            v-for="(row, index) in finalGames.results"
-            :key="row.game_id"
-            :title="`${index+1}. ${row.team_id}`"
-          ></v-list-item>
-        </v-list>
-      </template>
+          <h1 class="mt-10">Results</h1>
+          <v-list>
+            <v-list-item
+              v-for="(row, index) in finalGames.results"
+              :key="row.game_id"
+              :title="`${index+1}. ${row.team_id}`"
+            ></v-list-item>
+          </v-list>
+
+          <v-btn theme="dark" class="mt-3" color="red" @click="deleteTournament" :loading="loading">Delete Tournament</v-btn>
+        </div>
+      </v-expand-transition>
+
+      <v-snackbar
+        v-model="error"
+        :timeout="2000"
+        color="error"
+        variant="outlined"
+      >
+        {{ error }}
+      </v-snackbar>
     </v-responsive>
   </v-container>
 </template>
 
 <script>
 import axios from "axios"
+import TeamList from "@/components/TeamList.vue";
+import DivisionGame from "@/components/DivisionGame.vue";
+import DivisionGameWinners from "@/components/DivisionGameWinners.vue";
+import Game from "@/components/Game.vue";
 
 export default {
+  components: {Game, DivisionGameWinners, DivisionGame, TeamList},
   data() {
     return {
       loading: false,
@@ -241,7 +118,8 @@ export default {
       divisionGames: null,
       playoffGames: null,
       semifinalGames: null,
-      finalGames: null
+      finalGames: null,
+      error: null
     }
   },
   methods: {
@@ -254,6 +132,10 @@ export default {
           this.divisionB = response.data.divisionB
           this.tournament = response.data.tournament
         })
+        .catch(error => {
+          this.loading = false
+          this.error = error.message
+        })
     },
     runDivisionGames() {
       this.loading = true
@@ -261,6 +143,10 @@ export default {
         .then(response => {
           this.loading = false
           this.divisionGames = response.data
+        })
+        .catch(error => {
+          this.loading = false
+          this.error = error.message
         })
     },
     runPlayoffGames() {
@@ -270,6 +156,10 @@ export default {
           this.loading = false
           this.playoffGames = response.data
         })
+        .catch(error => {
+          this.loading = false
+          this.error = error.message
+        })
     },
     runSemifinalGames() {
       this.loading = true
@@ -277,6 +167,10 @@ export default {
         .then(response => {
           this.loading = false
           this.semifinalGames = response.data
+        })
+        .catch(error => {
+          this.loading = false
+          this.error = error.message
         })
     },
     runFinalGames() {
@@ -286,6 +180,31 @@ export default {
           this.loading = false
           this.finalGames = response.data
         })
+        .catch(error => {
+          this.loading = false
+          this.error = error.message
+        })
+    },
+    deleteTournament() {
+      this.loading = true
+      axios.delete(import.meta.env.VITE_API_URL + `/tournaments/${this.tournament.id}`)
+        .then(response => {
+          this.loading = false
+          this.resetData()
+        })
+        .catch(error => {
+          this.loading = false
+          this.error = error.message
+        })
+    },
+
+    resetData() {
+      this.divisionA = null
+      this.divisionB = null
+      this.divisionGames = null
+      this.playoffGames = null
+      this.semifinalGames = null
+      this.finalGames = null
     }
   }
 }
