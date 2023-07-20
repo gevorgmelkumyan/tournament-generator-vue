@@ -84,7 +84,7 @@
             ></v-list-item>
           </v-list>
 
-          <v-btn theme="dark" class="mt-3" color="red" @click="deleteTournament" :loading="loading">Delete Tournament</v-btn>
+          <v-btn theme="dark" class="mt-3" color="red" @click="deleteTournament" :loading="loading">Start Over</v-btn>
         </div>
       </v-expand-transition>
 
@@ -92,7 +92,7 @@
         v-model="error"
         :timeout="2000"
         color="error"
-        variant="outlined"
+        variant="elevated"
       >
         {{ error }}
       </v-snackbar>
@@ -125,7 +125,7 @@ export default {
   methods: {
     startTournament() {
       this.loading = true
-      axios.post(import.meta.env.VITE_API_URL + '/create_tournament')
+      axios.post(import.meta.env.VITE_API_URL + '/tournaments')
         .then(response => {
           this.loading = false
           this.divisionA = response.data.divisionA
@@ -139,7 +139,7 @@ export default {
     },
     runDivisionGames() {
       this.loading = true
-      axios.post(import.meta.env.VITE_API_URL + `/run_division_games/${this.tournament.id}`)
+      axios.post(import.meta.env.VITE_API_URL + `/tournaments/${this.tournament.id}/run_division_games`)
         .then(response => {
           this.loading = false
           this.divisionGames = response.data
@@ -151,7 +151,7 @@ export default {
     },
     runPlayoffGames() {
       this.loading = true
-      axios.post(import.meta.env.VITE_API_URL + `/run_playoffs/${this.tournament.id}`)
+      axios.post(import.meta.env.VITE_API_URL + `/tournaments/${this.tournament.id}/run_playoffs`)
         .then(response => {
           this.loading = false
           this.playoffGames = response.data
@@ -163,7 +163,7 @@ export default {
     },
     runSemifinalGames() {
       this.loading = true
-      axios.post(import.meta.env.VITE_API_URL + `/run_semi_finals/${this.tournament.id}`)
+      axios.post(import.meta.env.VITE_API_URL + `/tournaments/${this.tournament.id}/run_semi_finals`)
         .then(response => {
           this.loading = false
           this.semifinalGames = response.data
@@ -175,7 +175,7 @@ export default {
     },
     runFinalGames() {
       this.loading = true
-      axios.post(import.meta.env.VITE_API_URL + `/run_finals/${this.tournament.id}`)
+      axios.post(import.meta.env.VITE_API_URL + `/tournaments/${this.tournament.id}/run_finals`)
         .then(response => {
           this.loading = false
           this.finalGames = response.data
