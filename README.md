@@ -1,4 +1,20 @@
-# base
+# Tournament Generator App
+
+## Getting Started
+
+To set up the project on your local machine, follow these steps:
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/gevorgmelkumyan/tournament-generator-vue.git
+```
+
+2. Create a `.env.local` file with the contents of `.env`
+
+```bash
+cp .env .env.local
+```
 
 ## Project setup
 
